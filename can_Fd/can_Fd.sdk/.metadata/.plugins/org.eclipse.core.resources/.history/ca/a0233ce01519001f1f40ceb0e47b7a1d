@@ -1,0 +1,112 @@
+#include "xcanps.h"
+#include "xparameters.h"
+#include "xil_printf.h"
+
+#define CAN0_DEVICE_ID    XPAR_XCANPS_0_DEVICE_ID
+#define CAN1_DEVICE_ID    XPAR_XCANPS_1_DEVICE_ID
+
+#define TEST_MESSAGE_ID   2000
+#define FRAME_DATA_LENGTH 8
+
+XCanPs Can0, Can1;
+
+int CanPsSetup(XCanPs *InstancePtr, u16 DeviceId);
+int SendFrame(XCanPs *InstancePtr, u32 *TxFrame);
+int RecvFrame(XCanPs *InstancePtr, u32 *RxFrame);
+static u32 TxFrame[XCANPS_MAX_FRAME_SIZE_IN_WORDS];
+static u32 RxFrame[XCANPS_MAX_FRAME_SIZE_IN_WORDS];
+
+int main(void)
+{
+    int Status;
+
+    xil_printf("CAN0 to CAN1 Loopback Test\r\n");
+
+    Status = CanPsSetup(&Can0, CAN0_DEVICE_ID);
+    if (Status != XST_SUCCESS) {
+        xil_printf("CAN0 setup failed\r\n");
+        return XST_FAILURE;
+    }
+
+    Status = CanPsSetup(&Can1, CAN1_DEVICE_ID);
+    if (Status != XST_SUCCESS) {
+        xil_printf("CAN1 setup failed\r\n");
+        return XST_FAILURE;
+    }
+
+    // Prepare TxFrame for transmission
+    TxFrame[0] = XCanPs_CreateIdValue(TEST_MESSAGE_ID, 0, 0, 0, 0);
+    TxFrame[1] = XCanPs_CreateDlcValue(FRAME_DATA_LENGTH);
+    for (int i = 0; i < FRAME_DATA_LENGTH; i++) {
+        ((u8 *)&TxFrame[2])[i] = i;
+    }
+
+    // Send from CAN0
+    Status = SendFrame(&Can0, TxFrame);
+    if (Status != XST_SUCCESS) {
+        xil_printf("Failed to send frame from CAN0\r\n");
+        return XST_FAILURE;
+    }
+
+    // Receive on CAN1
+    Status = RecvFrame(&Can1, RxFrame);
+    if (Status != XST_SUCCESS) {
+        xil_printf("Failed to receive frame on CAN1\r\n");
+        return XST_FAILURE;
+    }
+
+    // Verify the received frame
+    for (int i = 0; i < FRAME_DATA_LENGTH; i++) {
+        if (((u8 *)&RxFrame[2])[i] != i) {
+            xil_printf("Data mismatch at index %d: expected %d, got %d\r\n", i, i, ((u8 *)&RxFrame[2])[i]);
+            return XST_FAILURE;
+        }
+    }
+
+    xil_printf("Successfully transmitted and received frame\r\n");
+    return XST_SUCCESS;
+}
+
+int CanPsSetup(XCanPs *InstancePtr, u16 DeviceId)
+{
+    XCanPs_Config *ConfigPtr;
+    int Status;
+
+    ConfigPtr = XCanPs_LookupConfig(DeviceId);
+    if (ConfigPtr == NULL) {
+        return XST_FAILURE;
+    }
+
+    Status = XCanPs_CfgInitialize(InstancePtr, ConfigPtr, ConfigPtr->BaseAddr);
+    if (Status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
+
+    Status = XCanPs_SelfTest(InstancePtr);
+    if (Status != XST_SUCCESS) {
+        return XST_FAILURE;
+    }
+
+    XCanPs_EnterMode(InstancePtr, XCANPS_MODE_CONFIG);
+    while (XCanPs_GetMode(InstancePtr) != XCANPS_MODE_CONFIG);
+
+    XCanPs_SetBaudRatePrescaler(InstancePtr, 29);
+    XCanPs_SetBitTiming(InstancePtr, 3, 2, 15);
+
+    XCanPs_EnterMode(InstancePtr, XCANPS_MODE_NORMAL);
+    while (XCanPs_GetMode(InstancePtr) != XCANPS_MODE_NORMAL);
+
+    return XST_SUCCESS;
+}
+
+int SendFrame(XCanPs *InstancePtr, u32 *TxFrame)
+{
+    while (XCanPs_IsTxFifoFull(InstancePtr) == TRUE);
+    return XCanPs_Send(InstancePtr, TxFrame);
+}
+
+int RecvFrame(XCanPs *InstancePtr, u32 *RxFrame)
+{
+    while (XCanPs_IsRxEmpty(InstancePtr) == TRUE);
+    return XCanPs_Recv(InstancePtr, RxFrame);
+}

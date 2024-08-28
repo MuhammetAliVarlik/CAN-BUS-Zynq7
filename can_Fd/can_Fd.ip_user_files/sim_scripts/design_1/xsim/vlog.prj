@@ -1,0 +1,8 @@
+verilog xil_defaultlib --include "../../../../can_Fd.srcs/sources_1/bd/design_1/ipshared/ec67/hdl" --include "../../../../can_Fd.srcs/sources_1/bd/design_1/ipshared/70cf/hdl" --include "../../../../can_Fd.srcs/sources_1/bd/design_1/ip/design_1_processing_system7_0_0" --include "../../../../can_Fd.srcs/sources_1/bd/design_1/ipshared/1b7e/hdl/verilog" --include "../../../../can_Fd.srcs/sources_1/bd/design_1/ipshared/122e/hdl/verilog" --include "../../../../can_Fd.srcs/sources_1/bd/design_1/ipshared/7d3c/hdl/verilog" --include "../../../../can_Fd.srcs/sources_1/bd/design_1/ipshared/c45e/hdl/verilog" \
+"../../../bd/design_1/ip/design_1_processing_system7_0_0/sim/design_1_processing_system7_0_0.v" \
+"../../../bd/design_1/ip/design_1_ila_0_0/sim/design_1_ila_0_0.v" \
+"../../../bd/design_1/sim/design_1.v" \
+
+verilog xil_defaultlib "glbl.v"
+
+nosort

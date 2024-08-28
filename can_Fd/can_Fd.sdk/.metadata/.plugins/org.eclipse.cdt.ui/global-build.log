@@ -1,0 +1,34 @@
+11:26:25 **** Clean-only build of configuration Debug for project CANFD_bsp_xcanps_polled_example_1 ****
+make clean 
+rm -rf  ./src/xcanps_polled_example.o  ./src/xcanps_polled_example.d  CANFD_bsp_xcanps_polled_example_1.elf.size  CANFD_bsp_xcanps_polled_example_1.elf
+' '
+11:26:26 **** Incremental Build of configuration Debug for project CANFD_bsp_xcanps_polled_example_1 ****
+make pre-build main-build 
+a9-linaro-pre-build-step
+' '
+'Building file: ../src/xcanps_polled_example.c'
+'Invoking: ARM v7 gcc compiler'
+arm-none-eabi-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT"src/xcanps_polled_example.o" -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -I../../CANFD_bsp/ps7_cortexa9_0/include -MMD -MP -MF"src/xcanps_polled_example.d" -MT"src/xcanps_polled_example.o" -o "src/xcanps_polled_example.o" "../src/xcanps_polled_example.c"
+'Finished building: ../src/xcanps_polled_example.c'
+' '
+'Building target: CANFD_bsp_xcanps_polled_example_1.elf'
+'Invoking: ARM v7 gcc linker'
+arm-none-eabi-gcc -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -Wl,-build-id=none -specs=Xilinx.spec -Wl,-T -Wl,../src/lscript.ld -L../../CANFD_bsp/ps7_cortexa9_0/lib -o "CANFD_bsp_xcanps_polled_example_1.elf"  ./src/xcanps_polled_example.o   -Wl,--start-group,-lxil,-lgcc,-lc,--end-group
+'Finished building target: CANFD_bsp_xcanps_polled_example_1.elf'
+' '
+'Invoking: ARM v7 Print Size'
+arm-none-eabi-size CANFD_bsp_xcanps_polled_example_1.elf  |tee "CANFD_bsp_xcanps_polled_example_1.elf.size"
+   text	   data	    bss	    dec	    hex	filename
+  29760	   1168	  22888	  53816	   d238	CANFD_bsp_xcanps_polled_example_1.elf
+'Finished building: CANFD_bsp_xcanps_polled_example_1.elf.size'
+' '
+11:28:00 **** Incremental Build of configuration Debug for project CANFD_bsp_xcanps_polled_example_1 ****
+make pre-build main-build 
+a9-linaro-pre-build-step
+' '
+make: Nothing to be done for 'main-build'.
+11:30:28 **** Incremental Build of configuration Debug for project CANFD_bsp_xcanps_polled_example_1 ****
+make pre-build main-build 
+a9-linaro-pre-build-step
+' '
+make: Nothing to be done for 'main-build'.
